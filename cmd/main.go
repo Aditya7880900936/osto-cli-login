@@ -1,10 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
+	"github.com/Aditya7880900936/osto-cli-login/internal/cli"
+	"github.com/Aditya7880900936/osto-cli-login/internal/controllers"
 	"github.com/Aditya7880900936/osto-cli-login/internal/database"
+	"github.com/Aditya7880900936/osto-cli-login/internal/repository"
+	"github.com/Aditya7880900936/osto-cli-login/internal/services"
 )
 
 func main() {
@@ -13,5 +16,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Database connected successfully.")
+	userRepository := repository.NewUserRepository()
+
+	authService := services.NewAuthService(userRepository)
+
+	authController := controllers.NewAuthController(authService)
+
+	application := cli.NewCLI(authController)
+
+	application.Start()
 }
