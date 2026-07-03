@@ -2,8 +2,7 @@ package main
 
 import (
 	"log"
-	"time"
-
+	
 	"github.com/Aditya7880900936/osto-cli-login/internal/cli"
 	"github.com/Aditya7880900936/osto-cli-login/internal/controllers"
 	"github.com/Aditya7880900936/osto-cli-login/internal/database"
@@ -22,7 +21,7 @@ func main() {
 
 	authService := services.NewAuthService(userRepository)
 
-	sessionManager := session.NewSessionManager(30 * time.Minute)
+	sessionManager := session.NewSessionManager()
 
 	authController := controllers.NewAuthController(
 		authService,

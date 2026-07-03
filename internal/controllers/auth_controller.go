@@ -1,10 +1,7 @@
 package controllers
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/Aditya7880900936/osto-cli-login/internal/services"
 	"github.com/Aditya7880900936/osto-cli-login/internal/session"
@@ -14,28 +11,22 @@ import (
 type AuthController struct {
 	authService    *services.AuthService
 	sessionManager *session.SessionManager
-	reader         *bufio.Reader
 }
 
 func NewAuthController(
 	authService *services.AuthService,
 	sessionManager *session.SessionManager,
 ) *AuthController {
-
 	return &AuthController{
 		authService:    authService,
 		sessionManager: sessionManager,
-		reader:         bufio.NewReader(os.Stdin),
 	}
 }
 
 func (c *AuthController) Register() {
 
 	username := utils.ReadLine("Username: ")
-	username = strings.TrimSpace(username)
-
-	password := utils.ReadLine("Password: ")
-	password = strings.TrimSpace(password)
+	password := utils.ReadPassword("Password: ")
 
 	if err := c.authService.Register(username, password); err != nil {
 		fmt.Println("❌", err)
@@ -48,10 +39,7 @@ func (c *AuthController) Register() {
 func (c *AuthController) Login() {
 
 	username := utils.ReadLine("Username: ")
-	username = strings.TrimSpace(username)
-
 	password := utils.ReadPassword("Password: ")
-	password = strings.TrimSpace(password)
 
 	user, err := c.authService.Login(username, password)
 	if err != nil {
@@ -62,6 +50,8 @@ func (c *AuthController) Login() {
 	c.sessionManager.Create(user)
 
 	fmt.Println("✅ Login successful.")
+
+	c.WhoAmI()
 }
 
 func (c *AuthController) WhoAmI() {
@@ -71,18 +61,21 @@ func (c *AuthController) WhoAmI() {
 		return
 	}
 
+	c.sessionManager.Refresh()
+
 	user := c.sessionManager.CurrentUser()
 
-	fmt.Println("\nCurrent User")
-	fmt.Println("------------")
-	fmt.Println("Username :", user.Username)
-	fmt.Println("MFA      :", user.MFAEnabled)
+	fmt.Println("\n========== USER ==========")
+	fmt.Printf("Username          : %s\n", user.Username)
+	fmt.Printf("Registered On     : %s\n", user.CreatedAt.Format("2006-01-02 15:04:05"))
+	fmt.Printf("MFA Enabled       : %t\n", user.MFAEnabled)
 
 	if user.LastLogin != nil {
-		fmt.Println("Last Login:", user.LastLogin.Format("2006-01-02 15:04:05"))
+		fmt.Printf("Last Login        : %s\n", user.LastLogin.Format("2006-01-02 15:04:05"))
 	}
 
-	fmt.Println("Session Expires:", c.sessionManager.ExpiresAt().Format("2006-01-02 15:04:05"))
+	fmt.Printf("Session Expires   : %s\n", c.sessionManager.ExpiresAt().Format("2006-01-02 15:04:05"))
+	fmt.Println("==========================")
 }
 
 func (c *AuthController) Logout() {
