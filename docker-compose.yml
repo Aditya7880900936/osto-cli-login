@@ -1,0 +1,11 @@
+services:
+  osto-cli:
+    build: .
+    container_name: osto-cli
+    stdin_open: true
+    tty: true
+
+    volumes:
+      - ./storage:/app/storage
+
+    restart: unless-stopped
