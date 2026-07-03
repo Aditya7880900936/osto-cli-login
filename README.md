@@ -225,6 +225,8 @@ Features
 - Lightweight deployment
 - No external database configuration required
 
+Note : SQLite was chosen for simplicity and portability, as permitted by the assignment. The application architecture allows replacing SQLite with PostgreSQL or MySQL by changing the GORM driver with minimal changes.
+
 ---
 
 ## 💻 Available Commands
