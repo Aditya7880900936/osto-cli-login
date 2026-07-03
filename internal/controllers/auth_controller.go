@@ -8,6 +8,7 @@ import (
 
 	"github.com/Aditya7880900936/osto-cli-login/internal/services"
 	"github.com/Aditya7880900936/osto-cli-login/internal/session"
+	"github.com/Aditya7880900936/osto-cli-login/internal/utils"
 )
 
 type AuthController struct {
@@ -30,12 +31,10 @@ func NewAuthController(
 
 func (c *AuthController) Register() {
 
-	fmt.Print("Username: ")
-	username, _ := c.reader.ReadString('\n')
+	username := utils.ReadLine("Username: ")
 	username = strings.TrimSpace(username)
 
-	fmt.Print("Password: ")
-	password, _ := c.reader.ReadString('\n')
+	password := utils.ReadLine("Password: ")
 	password = strings.TrimSpace(password)
 
 	if err := c.authService.Register(username, password); err != nil {
@@ -48,12 +47,10 @@ func (c *AuthController) Register() {
 
 func (c *AuthController) Login() {
 
-	fmt.Print("Username: ")
-	username, _ := c.reader.ReadString('\n')
+	username := utils.ReadLine("Username: ")
 	username = strings.TrimSpace(username)
 
-	fmt.Print("Password: ")
-	password, _ := c.reader.ReadString('\n')
+	password := utils.ReadPassword("Password: ")
 	password = strings.TrimSpace(password)
 
 	user, err := c.authService.Login(username, password)
@@ -98,4 +95,12 @@ func (c *AuthController) Logout() {
 	c.sessionManager.Destroy()
 
 	fmt.Println("✅ Logged out successfully.")
+}
+
+func (c *AuthController) Enable2FA() {
+	fmt.Println("Coming soon...")
+}
+
+func (c *AuthController) Disable2FA() {
+	fmt.Println("Coming soon...")
 }

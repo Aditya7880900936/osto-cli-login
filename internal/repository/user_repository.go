@@ -32,3 +32,14 @@ func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 func (r *UserRepository) Update(user *models.User) error {
 	return database.GetDB().Save(user).Error
 }
+
+func (r *UserRepository) IncrementFailedAttempts(user *models.User) error {
+	user.FailedAttempts++
+	return database.GetDB().Save(user).Error
+}
+
+func (r *UserRepository) ResetFailedAttempts(user *models.User) error {
+	user.FailedAttempts = 0
+	user.LockedUntil = nil
+	return database.GetDB().Save(user).Error
+}

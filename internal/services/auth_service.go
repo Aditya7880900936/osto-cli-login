@@ -10,6 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	MaxFailedAttempts = 5
+	LockDuration      = 5 * time.Minute
+)
+
 type AuthService struct {
 	userRepo *repository.UserRepository
 }
@@ -63,8 +68,33 @@ func (s *AuthService) Login(username, password string) (*models.User, error) {
 		return nil, err
 	}
 
+	if user.LockedUntil != nil && time.Now().Before(*user.LockedUntil) {
+		return nil, errors.New("account is temporarily locked. Please try again later")
+	}
+
 	if err := utils.CheckPassword(user.Password, password); err != nil {
+
+		if err := s.userRepo.IncrementFailedAttempts(user); err != nil {
+			return nil, err
+		}
+
+		if user.FailedAttempts >= MaxFailedAttempts {
+
+			lockUntil := time.Now().Add(LockDuration)
+			user.LockedUntil = &lockUntil
+
+			if err := s.userRepo.Update(user); err != nil {
+				return nil, err
+			}
+
+			return nil, errors.New("account locked for 5 minutes due to multiple failed login attempts")
+		}
+
 		return nil, errors.New("invalid username or password")
+	}
+
+	if err := s.userRepo.ResetFailedAttempts(user); err != nil {
+		return nil, err
 	}
 
 	now := time.Now()
