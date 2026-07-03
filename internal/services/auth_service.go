@@ -53,26 +53,26 @@ func (s *AuthService) Register(username, password string) error {
 	return s.userRepo.Create(user)
 }
 
-func (s *AuthService) Login(username, password string) error {
+func (s *AuthService) Login(username, password string) (*models.User, error) {
 
 	user, err := s.userRepo.FindByUsername(username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("invalid username or password")
+			return nil, errors.New("invalid username or password")
 		}
-		return err
+		return nil, err
 	}
 
 	if err := utils.CheckPassword(user.Password, password); err != nil {
-		return errors.New("invalid username or password")
+		return nil, errors.New("invalid username or password")
 	}
 
 	now := time.Now()
 	user.LastLogin = &now
 
 	if err := s.userRepo.Update(user); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return user, nil
 }

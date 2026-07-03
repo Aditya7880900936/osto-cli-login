@@ -39,6 +39,15 @@ func (c *CLI) Start() {
 		case "register":
 			c.authController.Register()
 
+		case "login":
+            c.authController.Login()
+
+		case "whoami":
+	        c.authController.WhoAmI()
+		
+		case "logout":
+	        c.authController.Logout()
+
 		case "help":
 			c.printHelp()
 
@@ -56,6 +65,9 @@ func (c *CLI) printHelp() {
 	fmt.Println("\nAvailable Commands")
 	fmt.Println("------------------")
 	fmt.Println("register")
+	fmt.Println("login")
+	fmt.Println("whoami")
+	fmt.Println("logout")
 	fmt.Println("help")
 	fmt.Println("exit")
 }
