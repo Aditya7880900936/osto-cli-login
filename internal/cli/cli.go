@@ -59,14 +59,14 @@ func (c *CLI) Start() {
 		case "whoami":
 			c.authController.WhoAmI()
 
-		case "logout":
-			c.authController.Logout()
-
 		case "enable-2fa":
 			c.authController.Enable2FA()
 
 		case "disable-2fa":
 			c.authController.Disable2FA()
+
+		case "logout":
+			c.authController.Logout()
 
 		case "help":
 			c.printHelp()
@@ -85,14 +85,19 @@ func (c *CLI) Start() {
 }
 
 func (c *CLI) printHelp() {
-	fmt.Println("\nAvailable Commands")
+
+	fmt.Println()
+	fmt.Println("Available Commands")
 	fmt.Println("------------------")
+
 	fmt.Println("register")
 	fmt.Println("login")
+
 	fmt.Println("whoami")
-	fmt.Println("logout")
 	fmt.Println("enable-2fa")
 	fmt.Println("disable-2fa")
+	fmt.Println("logout")
+
 	fmt.Println("help")
 	fmt.Println("exit")
 }

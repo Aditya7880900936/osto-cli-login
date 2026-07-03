@@ -41,10 +41,20 @@ func (c *AuthController) Login() {
 	username := utils.ReadLine("Username: ")
 	password := utils.ReadPassword("Password: ")
 
-	user, err := c.authService.Login(username, password)
+	user, requiresOTP, err := c.authService.Login(username, password)
 	if err != nil {
 		fmt.Println("❌", err)
 		return
+	}
+
+	if requiresOTP {
+
+		otp := utils.ReadLine("OTP: ")
+
+		if err := c.authService.VerifyOTP(user, otp); err != nil {
+			fmt.Println("❌", err)
+			return
+		}
 	}
 
 	c.sessionManager.Create(user)
@@ -52,6 +62,60 @@ func (c *AuthController) Login() {
 	fmt.Println("✅ Login successful.")
 
 	c.WhoAmI()
+}
+
+func (c *AuthController) Enable2FA() {
+
+	if !c.sessionManager.IsAuthenticated() {
+		fmt.Println("❌ Login required.")
+		return
+	}
+
+	user := c.sessionManager.CurrentUser()
+
+	secret, url, err := c.authService.Generate2FASetup(user.Username)
+	if err != nil {
+		fmt.Println("❌", err)
+		return
+	}
+
+	fmt.Println("\n====== Google Authenticator ======")
+	fmt.Println("Secret :", secret)
+	fmt.Println("OTPAuth URL:")
+	fmt.Println(url)
+	fmt.Println("==================================")
+
+	code := utils.ReadLine("Enter OTP: ")
+
+	if err := c.authService.Confirm2FA(user.Username, secret, code); err != nil {
+		fmt.Println("❌", err)
+		return
+	}
+
+	user.MFAEnabled = true
+	user.TOTPSecret = secret
+
+	fmt.Println("✅ 2FA Enabled Successfully.")
+}
+
+func (c *AuthController) Disable2FA() {
+
+	if !c.sessionManager.IsAuthenticated() {
+		fmt.Println("❌ Login required.")
+		return
+	}
+
+	user := c.sessionManager.CurrentUser()
+
+	if err := c.authService.Disable2FA(user.Username); err != nil {
+		fmt.Println("❌", err)
+		return
+	}
+
+	user.MFAEnabled = false
+	user.TOTPSecret = ""
+
+	fmt.Println("✅ 2FA Disabled Successfully.")
 }
 
 func (c *AuthController) WhoAmI() {
@@ -88,12 +152,4 @@ func (c *AuthController) Logout() {
 	c.sessionManager.Destroy()
 
 	fmt.Println("✅ Logged out successfully.")
-}
-
-func (c *AuthController) Enable2FA() {
-	fmt.Println("Coming soon...")
-}
-
-func (c *AuthController) Disable2FA() {
-	fmt.Println("Coming soon...")
 }
