@@ -1,3 +1,5 @@
+// CLI represents the interactive command-line interface
+// responsible for handling user commands.
 package cli
 
 import (
@@ -11,6 +13,9 @@ type CLI struct {
 	authController *controllers.AuthController
 	rl             *readline.Instance
 }
+
+// NewCLI creates and configures a new CLI instance
+// with readline support for history and auto-completion.
 
 func NewCLI(authController *controllers.AuthController) *CLI {
 
@@ -32,6 +37,8 @@ func NewCLI(authController *controllers.AuthController) *CLI {
 	}
 }
 
+// Start launches the interactive CLI loop
+// and dispatches commands to the appropriate controllers.
 func (c *CLI) Start() {
 
 	defer c.rl.Close()
@@ -84,6 +91,8 @@ func (c *CLI) Start() {
 	}
 }
 
+// printHelp displays all available commands
+// that can be executed from the CLI.
 func (c *CLI) printHelp() {
 
 	fmt.Println()

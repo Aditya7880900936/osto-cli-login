@@ -1,8 +1,11 @@
+// main initializes the application dependencies,
+// establishes the database connection,
+// and starts the interactive CLI.
 package main
 
 import (
 	"log"
-	
+
 	"github.com/Aditya7880900936/osto-cli-login/internal/cli"
 	"github.com/Aditya7880900936/osto-cli-login/internal/controllers"
 	"github.com/Aditya7880900936/osto-cli-login/internal/database"

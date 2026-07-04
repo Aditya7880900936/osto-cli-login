@@ -8,11 +8,15 @@ import (
 	"github.com/Aditya7880900936/osto-cli-login/internal/utils"
 )
 
+// AuthController handles all user interactions
+// related to authentication and session management.
 type AuthController struct {
 	authService    *services.AuthService
 	sessionManager *session.SessionManager
 }
 
+// NewAuthController creates and returns
+// a new authentication controller.
 func NewAuthController(
 	authService *services.AuthService,
 	sessionManager *session.SessionManager,
@@ -23,6 +27,8 @@ func NewAuthController(
 	}
 }
 
+// Register collects user credentials
+// and creates a new user account.
 func (c *AuthController) Register() {
 
 	username := utils.ReadLine("Username: ")
@@ -36,6 +42,8 @@ func (c *AuthController) Register() {
 	fmt.Println("✅ User registered successfully.")
 }
 
+// Login authenticates the user and
+// performs TOTP verification if enabled.
 func (c *AuthController) Login() {
 
 	username := utils.ReadLine("Username: ")
@@ -64,6 +72,8 @@ func (c *AuthController) Login() {
 	c.WhoAmI()
 }
 
+// Enable2FA generates a TOTP secret,
+// verifies the OTP, and enables multi-factor authentication.
 func (c *AuthController) Enable2FA() {
 
 	if !c.sessionManager.IsAuthenticated() {
@@ -98,6 +108,8 @@ func (c *AuthController) Enable2FA() {
 	fmt.Println("✅ 2FA Enabled Successfully.")
 }
 
+// Disable2FA disables two-factor authentication
+// for the currently authenticated user.
 func (c *AuthController) Disable2FA() {
 
 	if !c.sessionManager.IsAuthenticated() {
@@ -118,6 +130,8 @@ func (c *AuthController) Disable2FA() {
 	fmt.Println("✅ 2FA Disabled Successfully.")
 }
 
+// WhoAmI displays information about
+// the currently authenticated user.
 func (c *AuthController) WhoAmI() {
 
 	if !c.sessionManager.IsAuthenticated() {
@@ -142,6 +156,7 @@ func (c *AuthController) WhoAmI() {
 	fmt.Println("==========================")
 }
 
+// Logout terminates the current user session.
 func (c *AuthController) Logout() {
 
 	if !c.sessionManager.IsAuthenticated() {

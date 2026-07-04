@@ -11,11 +11,14 @@ import (
 	"gorm.io/gorm"
 )
 
+// AuthService contains the core business logic
+// for authentication, registration, and MFA.
 type AuthService struct {
 	userRepo    *repository.UserRepository
 	totpService *TOTPService
 }
 
+// NewAuthService creates a new AuthService instance.
 func NewAuthService(userRepo *repository.UserRepository) *AuthService {
 	return &AuthService{
 		userRepo:    userRepo,
@@ -23,6 +26,8 @@ func NewAuthService(userRepo *repository.UserRepository) *AuthService {
 	}
 }
 
+// Register validates user credentials,
+// hashes the password, and creates a new account.
 func (s *AuthService) Register(username, password string) error {
 
 	if err := utils.ValidateUsername(username); err != nil {
@@ -56,6 +61,9 @@ func (s *AuthService) Register(username, password string) error {
 	return s.userRepo.Create(user)
 }
 
+// Login authenticates a user,
+// applies account lockout rules,
+// and determines whether MFA verification is required.
 func (s *AuthService) Login(username, password string) (*models.User, bool, error) {
 
 	user, err := s.userRepo.FindByUsername(username)
@@ -109,6 +117,8 @@ func (s *AuthService) Login(username, password string) (*models.User, bool, erro
 	return user, false, nil
 }
 
+// VerifyOTP validates the TOTP code
+// for users with multi-factor authentication enabled.
 func (s *AuthService) VerifyOTP(user *models.User, code string) error {
 
 	if !user.MFAEnabled {
@@ -122,6 +132,8 @@ func (s *AuthService) VerifyOTP(user *models.User, code string) error {
 	return nil
 }
 
+// Generate2FASetup generates a TOTP secret
+// and provisioning URL for Google Authenticator.
 func (s *AuthService) Generate2FASetup(username string) (string, string, error) {
 
 	user, err := s.userRepo.FindByUsername(username)
@@ -141,6 +153,8 @@ func (s *AuthService) Generate2FASetup(username string) (string, string, error) 
 	return key.Secret(), key.URL(), nil
 }
 
+// Confirm2FA verifies the provided OTP
+// and enables two-factor authentication.
 func (s *AuthService) Confirm2FA(username, secret, code string) error {
 
 	user, err := s.userRepo.FindByUsername(username)
@@ -158,6 +172,8 @@ func (s *AuthService) Confirm2FA(username, secret, code string) error {
 	return s.userRepo.Update(user)
 }
 
+// Disable2FA disables multi-factor authentication
+// for the specified user.
 func (s *AuthService) Disable2FA(username string) error {
 
 	user, err := s.userRepo.FindByUsername(username)

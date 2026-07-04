@@ -2,6 +2,8 @@ package cli
 
 import "github.com/chzyer/readline"
 
+// Completer provides tab-completion support
+// for all supported CLI commands.
 var Completer = readline.NewPrefixCompleter(
 	readline.PcItem("register"),
 	readline.PcItem("login"),

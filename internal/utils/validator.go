@@ -6,14 +6,18 @@ import (
 	"strings"
 )
 
+// Regular expressions used for username
+// and password validation.
 var (
-	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,30}$`)
+	usernameRegex  = regexp.MustCompile(`^[a-zA-Z0-9_]{3,30}$`)
 	uppercaseRegex = regexp.MustCompile(`[A-Z]`)
 	lowercaseRegex = regexp.MustCompile(`[a-z]`)
 	numberRegex    = regexp.MustCompile(`[0-9]`)
 	specialRegex   = regexp.MustCompile(`[!@#$%^&*(),.?":{}|<>]`)
 )
 
+// ValidateUsername validates the username
+// according to the application's rules.
 func ValidateUsername(username string) error {
 	username = strings.TrimSpace(username)
 
@@ -28,6 +32,8 @@ func ValidateUsername(username string) error {
 	return nil
 }
 
+// ValidatePassword validates the password
+// against the defined security requirements.
 func ValidatePassword(password string) error {
 
 	if len(password) < 8 {

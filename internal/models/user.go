@@ -2,13 +2,14 @@ package models
 
 import "time"
 
+// User represents an application user stored in the database.
 type User struct {
 	ID uint `gorm:"primaryKey"`
 
 	Username string `gorm:"size:100;uniqueIndex;not null"`
 	Password string `gorm:"not null"`
 
-	MFAEnabled bool   `gorm:"default:false"`
+	MFAEnabled bool `gorm:"default:false"`
 	TOTPSecret string
 
 	FailedAttempts int        `gorm:"default:0"`
